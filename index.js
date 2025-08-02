@@ -1,36 +1,43 @@
-const express = require('express');
-const fetch = require('node-fetch');
-const bodyParser = require('body-parser');
+import express from 'express';
+import fetch from 'node-fetch';
 
 const app = express();
-app.use(bodyParser.json());
+const PORT = process.env.PORT || 3000;
 
-const FORWARD_URL = 'https://script.google.com/macros/s/AKfycbwYLyPKYLWCMyO-rsKM9HNy-XFBiwrqCeCCW_PytGdbhBGEfVway0xubp2yKkbXGNTU/exec';
+// URL веб-приложения Google Apps Script
+const GAS_URL = 'https://script.google.com/macros/s/AKfycbwLIcsyPG17SrBwxb1bIhZL9eYXc6ee5I0PsV-yVQx48O21Wg8zHalo8CtpUJVeDwtk0Q/exec';
 
-app.post('/', async (req, res) => {
-  try {
-    const response = await fetch(FORWARD_URL, {
-      method: 'POST',
-      body: JSON.stringify(req.body),
-      headers: { 'Content-Type': 'application/json' },
-    });
+// Мидлвар для разбора JSON
+app.use(express.json());
 
-    const responseText = await response.text();
-    console.log('Forwarded to GAS. Response:', responseText);
-
-    res.status(200).send('OK');
-  } catch (error) {
-    console.error('Error forwarding to GAS:', error);
-    res.status(500).send('Error');
-  }
-});
-
-app.get('/ping', (req, res) => {
-  console.log('Ping received');
+// Проверка GET-запроса
+app.get('/', (req, res) => {
+  console.log('GET / — Pong');
   res.send('pong');
 });
 
-const PORT = process.env.PORT || 3000;
+// Обработка POST-запросов от Telegram
+app.post('/', async (req, res) => {
+  console.log('POST / — входящий запрос от Telegram');
+
+  try {
+    const telegramBody = req.body;
+
+    const gasResponse = await fetch(GAS_URL + '?AiiLPRM0zew74LY0j04gJ1965Kzchx', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify(telegramBody),
+    });
+
+    const gasText = await gasResponse.text();
+    console.log('Forwarded to GAS. Response:', gasText);
+    res.send('ok');
+  } catch (err) {
+    console.error('Ошибка при пересылке в GAS:', err);
+    res.status(500).send('Ошибка на сервере прокси');
+  }
+});
+
 app.listen(PORT, () => {
-  console.log(`Proxy server is running on port ${PORT}`);
+  console.log(`Server is running on port ${PORT}`);
 });
