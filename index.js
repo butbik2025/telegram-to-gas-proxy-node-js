@@ -5,7 +5,8 @@ const app = express();
 const PORT = process.env.PORT || 3000;
 
 // URL веб-приложения Google Apps Script
-const GAS_URL = 'https://script.google.com/macros/s/AKfycbwLIcsyPG17SrBwxb1bIhZL9eYXc6ee5I0PsV-yVQx48O21Wg8zHalo8CtpUJVeDwtk0Q/exec?auth=AiiLPRM0zew74LY0j04gJ1965Kzchx';
+const GAS_URL = 'https://script.google.com/macros/s/AKfycbwLIcsyPG17SrBwxb1bIhZL9eYXc6ee5I0PsV-yVQx48O21Wg8zHalo8CtpUJVeDwtk0Q/exec?key=AiiLPRM0zew74LY0j04gJ1965Kzchx';
+
 
 // Мидлвар для разбора JSON
 app.use(express.json());
