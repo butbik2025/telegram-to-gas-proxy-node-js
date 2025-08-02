@@ -18,25 +18,25 @@ app.get('/', (req, res) => {
 
 // Обработка POST-запросов от Telegram
 app.post('/', async (req, res) => {
-  console.log('POST / — входящий запрос от Telegram');
+  const body = req.body;
+  console.log('Incoming from Telegram:', JSON.stringify(body));
 
   try {
-    const telegramBody = req.body;
-
-    const gasResponse = await fetch(GAS_URL + '?AiiLPRM0zew74LY0j04gJ1965Kzchx', {
+    const gasResponse = await fetch(GAS_URL + '?key=my_secure_key_123', {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify(telegramBody),
+      body: JSON.stringify(body)
     });
 
     const gasText = await gasResponse.text();
     console.log('Forwarded to GAS. Response:', gasText);
     res.send('ok');
-  } catch (err) {
-    console.error('Ошибка при пересылке в GAS:', err);
-    res.status(500).send('Ошибка на сервере прокси');
+  } catch (error) {
+    console.error('Error forwarding to GAS:', error);
+    res.status(500).send('Internal Server Error');
   }
 });
+
 
 app.listen(PORT, () => {
   console.log(`Server is running on port ${PORT}`);
