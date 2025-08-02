@@ -20,9 +20,9 @@ app.get('/', (req, res) => {
 app.post('/', async (req, res) => {
   const body = req.body;
   console.log('Incoming from Telegram:', JSON.stringify(body));
-
+  console.log('Sending to GAS:', GAS_URL + '?key=AiiLPRM0zew74LY0j04gJ1965Kzchx');
   try {
-    const gasResponse = await fetch(GAS_URL + '?key=my_secure_key_123', {
+    const gasResponse = await fetch(GAS_URL + '?AiiLPRM0zew74LY0j04gJ1965Kzchx', {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify(body)
