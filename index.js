@@ -1,28 +1,29 @@
 const express = require('express');
-const bodyParser = require('body-parser');
 const fetch = require('node-fetch');
+const bodyParser = require('body-parser');
 
 const app = express();
 const PORT = process.env.PORT || 3000;
-const FORWARD_URL = process.env.FORWARD_URL;
+
+// Укажи сюда актуальный URL развертывания Google Apps Script
+const FORWARD_URL = 'https://script.google.com/macros/s/AKfycbwYLyPKYLWCMyO-rsKM9HNy-XFBiwrqCeCCW_PytGdbhBGEfVway0xubp2yKkbXGNTU/exec';
 
 app.use(bodyParser.json());
 
 app.post('/', async (req, res) => {
   try {
-    const telegramData = req.body;
-    const response = await fetch(FORWARD_URL, {
+    await fetch(FORWARD_URL, {
       method: 'POST',
+      body: JSON.stringify(req.body),
       headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify(telegramData),
     });
     res.status(200).send('OK');
   } catch (err) {
-    console.error('Ошибка проксирования:', err);
-    res.status(500).send('Error');
+    console.error('Ошибка прокси:', err);
+    res.status(500).send('Ошибка прокси');
   }
 });
 
 app.listen(PORT, () => {
-  console.log(`🚀 Proxy listening on port ${PORT}`);
+  console.log(`Proxy listening on port ${PORT}`);
 });
