@@ -4,31 +4,32 @@ import fetch from 'node-fetch';
 const app = express();
 const PORT = process.env.PORT || 3000;
 
-// URL веб-приложения Google Apps Script
-const GAS_URL = 'https://script.google.com/macros/s/AKfycbwLIcsyPG17SrBwxb1bIhZL9eYXc6ee5I0PsV-yVQx48O21Wg8zHalo8CtpUJVeDwtk0Q/exec?key=AiiLPRM0zew74LY0j04gJ1965Kzchx';
+// Секретный ключ и URL GAS-скрипта
+const SECRET_KEY = 'AiiLPRM0zew74LY0j04gJ1965Kzchx';
+const GAS_URL = 'https://script.google.com/macros/s/AKfycbwLIcsyPG17SrBwxb1bIhZL9eYXc6ee5I0PsV-yVQx48O21Wg8zHalo8CtpUJVeDwtk0Q/exec';
 
-
-// Мидлвар для разбора JSON
 app.use(express.json());
 
-// Проверка GET-запроса
+// Проверка доступности
 app.get('/', (req, res) => {
   console.log('GET / — Pong');
   res.send('pong');
 });
 
-// Обработка POST-запросов от Telegram
+// Основной маршрут
 app.post('/', async (req, res) => {
   const body = req.body;
   console.log('Incoming from Telegram:', JSON.stringify(body));
-  console.log('Sending to GAS:', GAS_URL);
-  try {
-	const gasResponse = await fetch(GAS_URL, {
-	  method: 'POST',
-	  headers: { 'Content-Type': 'application/json' },
-	  body: JSON.stringify(body)
-	});
 
+  const targetUrl = `${GAS_URL}?key=${SECRET_KEY}`;
+  console.log('Sending to GAS:', targetUrl);
+
+  try {
+    const gasResponse = await fetch(targetUrl, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify(body)
+    });
 
     const gasText = await gasResponse.text();
     console.log('Forwarded to GAS. Response:', gasText);
@@ -38,7 +39,6 @@ app.post('/', async (req, res) => {
     res.status(500).send('Internal Server Error');
   }
 });
-
 
 app.listen(PORT, () => {
   console.log(`Server is running on port ${PORT}`);
