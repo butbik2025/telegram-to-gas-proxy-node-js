@@ -20,13 +20,14 @@ app.get('/', (req, res) => {
 app.post('/', async (req, res) => {
   const body = req.body;
   console.log('Incoming from Telegram:', JSON.stringify(body));
-  console.log('Sending to GAS:', GAS_URL + '?key=AiiLPRM0zew74LY0j04gJ1965Kzchx');
+  console.log('Sending to GAS:', GAS_URL);
   try {
-    const gasResponse = await fetch(GAS_URL + '?AiiLPRM0zew74LY0j04gJ1965Kzchx', {
-      method: 'POST',
-      headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify(body)
-    });
+	const gasResponse = await fetch(GAS_URL, {
+	  method: 'POST',
+	  headers: { 'Content-Type': 'application/json' },
+	  body: JSON.stringify(body)
+	});
+
 
     const gasText = await gasResponse.text();
     console.log('Forwarded to GAS. Response:', gasText);
